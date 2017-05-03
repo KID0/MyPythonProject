@@ -3,7 +3,7 @@
 # 本游戏使用WASD控制
   
 import random  
-# 一个矩阵储存数据
+# 定义一个矩阵储存数据
 v = [[0, 0, 0, 0],  
      [0, 0, 0, 0],  
      [0, 0, 0, 0],  
@@ -33,16 +33,18 @@ def init(v):
 def align(vList, direction):  
         # 移除列表中的0  
         # count()方法返回子字符串在字符串中出现的次数
+        # remove()方法移除一个“0”(用一次这个方法去掉一个“0”)
         for i in range(vList.count(0)):  
-                vList.remove(0)  
-        # 被移除的0  
-        # ?
+                vList.remove(0)
+        # 这里将“0”补到后面（觉得好笨拙）
+        # 这里的vList是移除“0”后的vList，长度不一定是4
         zeros = [0 for x in range(4 - len(vList))]  
         # 在非0数字的一侧补充0  
         if direction == 'left':  
                 vList.extend(zeros)  
         else:  
-                vList[:0] = zeros  
+                # 这里不是很懂？
+                vList[:0] = zeros
 
 
 # 在列表查找相同且相邻的数字相加,找到符合条件的返回True,同时还返回增加的分数
@@ -64,16 +66,21 @@ def addSame(vList, direction):
                                 vList[i-1] *= 2  
                                 vList[i] = 0  
                                 score += vList[i-1]  
-                                return {'bool':True, 'score':score}  
+                                return {'bool':True, 'score':score} 
+        # 如果既没有left，也没有right
         return {'bool':False, 'score':score}  
 
 # 处理一行（列）中的数据，得到最终的该行（列）的数字状态值, 返回得分
 def handle(vList, direction):  
         # 加总分
         totalScore = 0  
+        # 这算一个触发
         align(vList, direction)  
         result = addSame(vList, direction)  
+
+        # 'bool' == True --> 这是一次成功的移动
         while result['bool'] == True:  
+                # 然后不断循环下去
                 totalScore += result['score']  
                 align(vList, direction)  
                 result = addSame(vList, direction)  
@@ -117,6 +124,7 @@ def operation(v):
   
         # 统计空白区域数目 N  
         N = 0  
+        # 就是计算四次
         for q in v:  
             N += q.count(0)  
         # 不存在剩余的空白区域时，游戏结束  
@@ -124,11 +132,11 @@ def operation(v):
                 gameOver = True  
                 return {'gameOver':gameOver, 'score':totalScore}  
   
-        # 按2和4出现的几率为3/1来产生随机数2和4  
+        # 按2和4出现的几率为3：1来产生随机数2和4  
         num = random.choice([2, 2, 2, 4])   
         # 产生随机数k，上一步产生的2或4将被填到第k个空白区域  
+        # randrange()方法：输出x，1<=x<N+1
         k = random.randrange(1, N+1)  
-        # 为什么不直接填进去呢?
         n = 0  
         for i in range(4):  
                 for j in range(4):  
@@ -139,12 +147,16 @@ def operation(v):
                                         break  
   
         return {'gameOver':gameOver, 'score':totalScore}  
-  
+
+# 初始化
 init(v)  
 score = 0  
 print('Input：W(Up) S(Down) A(Left) D(Right), press <CR>.')  
-while True:  
+while True:
+        # 展示计分板
         display(v, score)  
+        # 输入WASD，计算一次
+        # operation()中，gameOver一开始的定义是False
         result = operation(v)  
         if result['gameOver'] == True:  
                 print('Game Over, You failed!')  
