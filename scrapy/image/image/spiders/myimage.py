@@ -11,5 +11,6 @@ class MyimageSpider(scrapy.Spider):
 
     def parse(self, response):
         item = ImageItem()
+        # 提取出图片的链接地址
         item['image_urls'] = response.xpath('//div[@class="carousel"]//div[@class="cover"]//img/@src').extract()
         return item
